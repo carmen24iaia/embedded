@@ -1,0 +1,18 @@
+Cosa rappresenta la velocità di un GPIO configurato come output? In quale registro viene conservata questa 
+informazione e qual è il valore di configurazione  di default?
+
+Rappresenta la velocità di salita e di discesa, che può essere: bassa, media, veloce e alta. Una maggiore velocità aumenta
+il rumore e il consumo energetico.
+Tale informazione è conservata nello OSPEEDR (GPIO Port Output Speed Register). Il valore default è 00.
+
+
+ Cosa cambia, dal punto di vista pratico, nella configurazione di un GPIO di output come push-pull o open-drain? 
+ Con quali registri vengono configurate tali modalità?
+ 
+  Un'uscita PUSH PULL si ha quando, se il suo stato è alto, viene forzarq alla tensione di alimentazione, mentre se il suo stato è
+  basso viene forzato a 0V
+  
+  Un'uscita OPEN DRAIN invece è attivo solo in una direzione, si può "spingere" verso terra ma non è possibile collegarla a Vcc. 
+  In questa configurazione è necessario collegare una resistenza di pull up collegata alla tensione di alimentazione
+  
+  Tali modalità bengono configurate con gli OTYPE, ovvero GPIO Output Type Register.
