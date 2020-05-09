@@ -1,0 +1,11 @@
+
+ Illustrare brevemente funzionamento e differenze tra le funzioni MOV, MVN e MOVT.
+ 
+ MOV -> copia un registro o una costante in un secondo registro.
+ MVN -> equivale a MOVE NOT e sostanzialmente copia il negato di un registro in un altro.
+ MOVT-> va a settare tutti e 32 i bit del registro
+ 
+ 
+ Di quanti registri vi è bisogno per conservare il risultato di un operazione come UMLAL?
+ 
+ Per tale operazone si ha bisogno di due registri, poiché il risutlato che si ottiene e a 64bit
