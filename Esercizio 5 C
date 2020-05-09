@@ -1,0 +1,20 @@
+Scrivere del codice C che, operando su un valore a 8 bit (unsigned char), configuri i bit 4, 5 e 6 rispettivamente 
+ai valori 1, 0 e 1; lasciando tutti i restanti a 0.
+
+int modbit (char b){
+   int i;
+   char mask;
+   for(i=0; i<=b; i++){
+      while(i<1 || i=7){
+           x[i] = b[i] & mask[i];
+      }
+      if(i=4){
+         x[i] = b[i] | mask[i];
+      }else if (i=5){
+          x[i] = b[i] & mask[i];
+      }else{
+           x[i] = b[i] | mask[i];
+      }
+   }
+   return x;
+ }
