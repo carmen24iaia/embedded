@@ -1,0 +1,19 @@
+Tradurre in codice Assembly la seguente funzione C:
+
+
+int c_strlen(char *s) {
+  int i = 0;
+  while ( s[i] != '\0' )
+         i++;
+  return i;
+}
+
+Soluzione:
+
+loop:
+      LDRB r2, [r0]                             ;carica s
+      ADDS r0, #1                               ;incremento i
+      STRB r0, [r1]                             ;salva i
+      CMP r2, #0                                ;compara r2 con 0
+      BNE loop                                  ;se diverso da 0 riprendiamo il loop
+      BL r0                                     ;restituisci r0
