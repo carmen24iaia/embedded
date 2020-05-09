@@ -1,0 +1,23 @@
+Quale registro viene utilizzato per la gestione delle priorità per le interrupts? 
+In quanti (e quali) campi viene suddiviso tale registro per la configurazione delle priorità?
+
+Per la gesione delle priorità viente utilizzato l'INTERRUPT PRIORITY REGISTER (IP). Tale registro è diviso in tre campi:
+1 - PREEMPT PRIORITY NUMBER che definisce la priorità di prelazione.
+2 - SUB PRIORITY NUMBER che determina l'ordine di esecuzione delle interruzioni che sono in sospeso e con lo stesso
+    preempt priority number.
+3 - il terzo campo non è implementato
+
+
+
+Quali registri entrano in gioco nella configurazione del System Timer (SysTick)?
+
+I registri che entrano in gioco sono:
+- SysTick control and status register (SysTick_CTRL).
+- SysTick reload value register (SysTick_LOAD).
+- SysTick current value register (SysTick_VAL).
+- SysTick calibration register (SysTick_CALIB).
+
+ È possibile, usando il clock HSI con PLL, generare un SYSCLK a 100.5 Mhz? Motivare la risposta esplicitando la soluzione, 
+ eventualmente mostrare anche uno screen della schermata di Clock Configuration di STM32Cube MX.
+ 
+ DA VERIFICARE
