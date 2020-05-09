@@ -1,0 +1,128 @@
+ Realizzare, utilizzando la piattaforma mbed, lo stesso esercizio realizzato in precedenti esercitazioni: 
+ connettere alla scheda 3 pulsanti e 3 LED ed utilizzare il meccanismo delle interrupt per realizzare, 
+ alla pressione di ogni pulsante, una funzione differente con i LED.
+ 
+ #include "mbed.h"         
+#include "leds_util.h"   
+
+
+// LED
+
+//Serial myPc(USBTX, USBRX);
+
+
+// Define Interrupt Inputs
+InterruptIn btn_1(PA_10);
+InterruptIn btn_2(PA_8);
+InterruptIn bnt_3(PC_2);
+
+
+// Define output 
+DigitalOut led_1(PB_6);
+DigitalOut led_2(PB_1);
+DigitalOut led_3(PB_15);
+
+int move_flag = 0;
+
+void motion_callback(){
+    led_1.write(0);
+    move_flag = 1;
+}
+
+// Define ISR - btn_1
+void btn_1_callback(){
+    on_off(led_1, led_2, led_3);
+}
+
+
+// Define ISR - btn_2
+void btn_2_callback(){
+    blink(led_1, led_2, led_3);    
+}
+
+
+// Define ISR - btn_3
+void btn_3_callback(){
+    blink_all(led_1, led_2, led_3);  
+      
+}
+
+int main(){
+    __enable_irq();
+    
+    // Callback on Rising Edge
+    btn_1.rise(&btn_1_callback);
+    btn_2.rise(&btn_2_callback);
+    bnt_3.rise(&btn_3_callback);
+
+    //m_sensor.rise(&motion_callback);
+    // Change Priority
+    NVIC_SetPriority(EXTI15_10_IRQn, 0);
+    NVIC_SetPriority(EXTI9_5_IRQn, 0);
+    NVIC_SetPriority(EXTI2_IRQn, 0);
+
+    float dig; 
+
+
+    while(1){
+            __WFI();
+        }
+    }
+}
+
+
+/ ********************************************************************************** /
+
+#include "mbed.h"
+
+void on_off(DigitalOut led1, DigitalOut led2, DigitalOut led3);
+void blink(DigitalOut led1, DigitalOut led2, DigitalOut led3);
+void blink_all(DigitalOut led1, DigitalOut led2, DigitalOut led3);
+
+/ ************************************************************************************ /
+
+void on_off(DigitalOut led1, DigitalOut led2, DigitalOut led3){
+    if(flag == 0){
+        led1.write(1);
+        led2.write(1);
+        led3.write(1);
+        flag = 1;
+    }else{
+        led1.write(0);
+        led2.write(0);
+        led3.write(0);
+        flag = 0;
+
+    }
+}
+
+void blink(DigitalOut led1, DigitalOut led2, DigitalOut led3){
+    for(int i = 0; i<5; i++){
+            led1.write(1);
+            HAL_Delay(300);
+            led2.write(1);
+            HAL_Delay(300);
+            led3.write(1);
+            HAL_Delay(300);
+            led3.write(0);
+            HAL_Delay(300);
+            led2.write(0);
+            HAL_Delay(300);
+            led1.write(0);
+            HAL_Delay(300);
+         
+
+    }
+}
+void blink_all(DigitalOut led1, DigitalOut led2, DigitalOut led3){
+    for(int i = 0; i<10; i++){
+            led1.write(1);
+            led2.write(1);
+            led3.write(1);
+            HAL_Delay(300);     
+            led3.write(0);
+            led2.write(0);
+            led1.write(0);
+            HAL_Delay(300);     
+        }
+}
