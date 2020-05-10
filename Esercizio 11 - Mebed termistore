@@ -1,0 +1,73 @@
+Sfruttare ADC e DAC per simulare la gestione di un sistema di monitoraggio di temperatura, molto semplificato, 
+implementando il tutto con la piattaforma Mbed.
+
+Il programma legge, anche in polling, il valore di temperatura fornito da un sensore analogico e controlla ciclicamente 
+se il valore letto supera una determinata soglia (scelta in maniera adeguata vista l'applicazione); 
+se la soglia viene superata si interrompe la fase di lettura per passare ad una fase di generazione di un 
+segnale analogico costante (pari a 1.5V) per 10 secondi, durante la quale si può accendere un LED rosso di segnalazione.
+
+Per controllare la corretta generazione del segnale è possibile utilizzare un altro ingresso analogico, 
+sul quale viene collegata l'uscita del DAC ed il valore letto viene stampato sullo schermo. Passati i 10 secondi, 
+il programma ricomincia a leggere e controllare il valore di temperatura come fatto inizialmente. 
+Si suppone che nell'arco di 10 secondi la temperatura non sia più superiore alla soglia: si lascia alla fantasia l'immaginare 
+un qualche stratagemma che, nell'arco di quei 10 secondi, raffreddi il sensore. Per rendere l'esercizio più completo si potrebbe 
+infine aggiungere una modulazione del segnale analogico generato tramite un potenziometro.
+
+Si noti che, ovviamente, questo ha solo lo scopo di essere un esercizio per prendere familiarità con i sensori analogici 
+e le uscite del DAC, non ha la pretesa di essere un vero sistema di monitoraggio e gestione della temperatura.
+
+
+// TERMISTORE
+#define R_S 10000    // Resistenza in Serie al termistore
+#define R25 10000    // Resistenza di riferimento
+#define T0 25+273.15 // Temperatura di riferimento
+#define B 3950       // Parametro B del termistore
+
+DigitalOut led_3(PB_15);
+AnalogIn analog_in(A1);
+DigitalOut buzzer(D10);
+
+int main(){
+    
+    float meas_in;
+    double v_in;
+    float temp;
+    float R_thermistor;
+    float S_H;
+
+    while(1) {
+        // Read the analog input value (value from 0.0 to 1.0 = full ADC conversion range)
+        meas_in = analog_in.read(); 
+        // Converts value in the 0V-3.3V range (3.3V = 3300mV)
+        v_in = (meas_in*3300);
+        // Calculate Thermistor Resistance (using Voltage divider formula)
+        R_thermistor = (R_S)/((3300/v_in)-1);
+        // Steinhart-Hart
+        S_H = 1.0/(T0) + (1.0/B)*log(R_thermistor/R25);
+        S_H = 1/S_H;
+        // Kelvin -> Celsius
+        temp = S_H-273.15;
+        //printf("measure : %f -> %.0f mV \n", meas_in, meas_mv);
+        printf("temperature : %f °C\n", temp);
+        // Pause
+        HAL_Delay(1000);
+
+        if(temp>23.0){
+            for(int i = 0; i<10; i++){
+
+                float a_out = 1875*0.0008;
+                printf("a_out : %f °C\n", a_out);
+                led_3.write(a_out);
+                HAL_Delay(50);
+                led_3 = 0;
+                buzzer = a_out;
+                HAL_Delay(50);
+                buzzer = 0;
+                HAL_Delay(50);
+
+            }
+        }else{
+            led_3 = 0;
+        }
+    }
+}
