@@ -1,0 +1,25 @@
+Quale valore avrà l'intero x per un valore di ingresso tra 1.5V e 2.5V campionato usando un oggetto AnalogIn della libreria mbed?
+
+#include "mbed.h"
+AnalogIn A_in(p20);
+
+int main(){
+    int x = A_in.read_u16();
+}
+
+1? Dai calcoli avevo tirato fuori 0.61 XD
+
+Se per un DAC a 7 bit la tensione di riferimento è 2.56V, qual è la sua risoluzione in termini di voltaggio?
+
+0.02 V
+
+Descrivere brevemente il funzionamento di un ADC ad approssimazioni successive (SAR).
+
+DA FARE, LO AVEVO SALTATO
+
+Come funziona l'Analog Watchdog e in quale registro si trovano i campi di configurazione? 
+Come ad esempio il campo analog watchdog channel selection.
+
+L'AWD ha il proprio bit settato se la tensione analogica convetita dall'ADC è V>Vhtr o V<Vltr, generando così un'interrupts
+Tali soglie sono settate nei 12 bit meno significativi dei registri ADC_HTR e ADC_LTR (a 16 bit).
+I campi di configurazione, invece, si trovano nell'ADC_CR1.
