@@ -1,0 +1,70 @@
+/* Utilizzando i valori letti dal potenziometro, il flashing rate del LED deve variare 
+tra 0 secondi e un 1 secondo, nel caso di valore pari a 0.0 il LED deve spegnersi. 
+Il sistema viene gestito dalla pressione di un pulsante (USER_BUTTON o pulsante esterno) 
+che abilita/disabilita l'utilizzo del valore letto dal potenziometro per gestire il lampeggiare
+del LED: dopo l'avvio del programma, premendo il pulsante si disabilita la lettura 
+dal potenziometro ed il LED continua a lampeggiare con un rate pari all'ultimo valore letto 
+in ingresso; ri-premendo il pulsante si ripristina il funzionamento iniziale, con il potenziometro 
+si può nuovamente gestire il lampeggiare del LED. */
+
+
+DigitalIn external_btn(PA_10);
+DigitalOut led_1(PB_6);
+//InterruptIn btn_2(PA_8);
+AnalogIn pot_in(A0);
+//float pot = pot_in.read();
+
+
+int main(){
+    float pot_val_f;
+    uint16_t pot_val;
+    float pots;
+    while(1) {
+
+        
+
+        float flag = external_btn.read();
+        if(flag == 0){
+
+             // Read the input voltage, represented as a float in the range [0.0, 1.0]
+            pot_val_f = pot_in.read();
+            // Read the input voltage, represented as an unsigned short in the range [0x0, 0xFFFF]
+            pot_val = pot_in.read_u16();
+            printf("(Float value: %.4f) || (Unsigned int value: %d)    \n", pot_val_f, pot_val);
+            wait(0.1);          // Wait 500ms
+            printf("\033[1A");  // Clear Line 
+            led_blinks(led_1, pot_val_f);
+            pots = led_blinks(led_1, pot_val_f);
+        }else if(flag == 1){
+            led_blinks(led_1, pots);
+        }
+
+    }
+
+}
+
+
+
+
+/* ************************************************************************************************************************ */
+
+float led_blinks(DigitalOut led, float pot);
+
+
+/* ************************************************************************************************************************ */
+
+float led_blinks(DigitalOut led, float pot){
+    if(pot == 0 || pot<=0.05){
+            led.write(0);
+        }else{
+
+            for(int i = 0; i < 10; i++){
+                led.write(1);
+                HAL_Delay(pot*200);
+                led.write(0);
+                HAL_Delay(pot*200);
+            } 
+
+        }
+    return pot;
+}
