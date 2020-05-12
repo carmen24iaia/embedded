@@ -1,12 +1,13 @@
 Tradurre in codice Assembly la seguente funzione C:
 
-
+<code>
 int c_strlen(char *s) {
   int i = 0;
   while ( s[i] != '\0' )
          i++;
   return i;
 }
+<\code>
 
 Soluzione:
 
