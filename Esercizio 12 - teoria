@@ -15,7 +15,17 @@ Se per un DAC a 7 bit la tensione di riferimento è 2.56V, qual è la sua risolu
 
 Descrivere brevemente il funzionamento di un ADC ad approssimazioni successive (SAR).
 
-DA FARE, LO AVEVO SALTATO
+Il funzionamento di un ADC ad approssimazioni successive è il seguente:
+
+L'inizio della conversione avviene inviando al S.A.R. il segnale SOC. In questo modo nel SAR viene caricata 
+una parola nella quale il solo bit più significativo (MSB) è posto a 1 (tutti gli altri bit sono a zero).   
+    
+Se Vin > VD il S.A.R. mantiene MSB a 1 e carica un altro 1 nel bit immediatamente successivo (cioè pone un 1 anche nel bit n-1).
+
+Se, invece Vin < VD il S.A.R. pone MSB a 0 e carica un 1 nel bit immediatamente successivo (cioè nel bit n-1).
+
+I passi vengono ripetuti allo stesso modo per tutti i bit successivi.
+
 
 Come funziona l'Analog Watchdog e in quale registro si trovano i campi di configurazione? 
 Come ad esempio il campo analog watchdog channel selection.
