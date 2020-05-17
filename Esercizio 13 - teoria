@@ -1,0 +1,74 @@
+ Spiegare in maniera sintetica il funzionamento della capture mode con cui possono operare i timers.
+ 
+In tale modalità i registri Capture / Compare (TIMx_CCRx) vengono utilizzati per "bloccare" il
+valore del contatore dopo una transizione rilevata dal segnale ICx corrispondente. 
+Infatti: l'event source genera una sequenza di impulsi, quando si verifica l'evento viene abilitata l'acquisizione e il registro
+"congela" lo stato del time register allo stato in cui si trova nel momento in cui si verifica l'evento. Inoltre, per dividere 
+la prequenza degli eventi può essere utilizzato il prescaler, mentre per avvisare il processore che può eseguire altre azioni 
+viene generato un interrupt.
+Sostanzialmente, quando si verifica la capture viene settato il flag CCXIF corrispondente (registro TIMx_SR) e possono essere 
+inviati, se abilitati o un interrupt o una richiesta DMA. Se si verifica una capture mentre il flag CCxIF è già alto viene 
+settato il flag  di over-capture CCxOF (registro TIMx_SR).
+
+
+
+Per un basic timer in un sistema con clock a 42Mhz, come possono essere scelti i di prescalar e 
+period per ottenere un update event di 300ms?
+
+Il prescalar protrebbe essere di 1399 e il period di 9999.
+
+
+❓ Quali registri entrano in gioco per la generazione di un segnale PWM con un general purpose timer? 
+Ed in particolare, a quale registro è direttamente associato il valore del duty cycle?
+
+Con i general purpose time entrano in gioco, per quanto riguarda il segnale pwm, i registri da TIM9 a TIM14 e TIM2 TIM3 TIM4 TIM5.
+In particolare il valore del duty cycle è associato al registro TIMx_CCRy, mentre il periodo è associato al registro TIMx_ARR.
+
+
+❓ Qual è la differenza tra le modalità up-counting e center-aligned per la generazione di un segnale PWM? 
+Pensa ci possa essere un vantaggio ad usare una delle due o l'utilizzo dipende esclusivamente dal tipo di segnale 
+che si vuole realizzare?
+
+In modalità upcounting, il contatore conta da 0 al valore di auto-reload (contenuto del file
+TIMx_ARR register), quindi riavvia da 0 e genera un evento di overflow del contatore.
+Un evento di aggiornamento può essere generato ad ogni overflow del contatore o settando il bit UG nel
+Registro TIMx_EGR.
+L'evento UEV può essere disabilitato via software settando il bit UDIS nel registro TIMx_CR1.
+Questo per evitare di aggiornare i registri di supporto durante la scrittura di nuovi valori nei registri di preload. 
+Quindi non si verifica alcun evento di aggiornamento fino a quando il bit UDIS non è stato settato a 0. Tuttavia,
+il contatore riparte da 0, così come il contatore del prescaler, ma il prescalar rate non cambia. Inoltre, se è settato il bit URS
+nel registro TIMx_CR1, l'impostazione del bit UG genera un update event UEV ma senza sttare il flag UIF
+(quindi non viene inviata alcuna richiesta di interruzione o DMA). Questo per evitare che avvengando delle interrupts 
+durante sia l'update che l'acquisizione quando viene cancellato il contatore sull'evento di acquisizione.
+Quando si verifica un update event, tutti i registri vengono aggiornati e viene settato il flag di aggiornamento ( ovvero
+bit UIF in TIMx_SR register) a seconda del bit URS:
+• Il buffer del prescaler viene ricaricato con il valore di preload (TIMx_PSC); 
+• Il registro ombra di auto-reload viene aggiornato con il valore di preload (TIMx_ARR).
+
+
+In modalità center-aligned il contatore conta da 0 al valore di auto-reload (contenuto di
+TIMx_ARR register) - 1, genera un evento di overflow del contatore, quindi conta dall'auto-reload
+fino a 1 e genera un evento di underflow contatore. Quindi ricomincia il conteggio da 0.
+La  modalità center-aligned è attiva quando i bit CMS nel registro TIMx_CR1 non sono uguali a '00'. 
+Il flag di interrupt di confronto output dei canali configurati in output viene impostato quando: 
+il contatore esegue il conto alla rovescia (modalità center-aligned 1, CMS = "01"), il contatore conta in avanti 
+(modalità center-aligned 2, CMS = "10") il contatore conta  avanti e indietro (modalità center-aligned 3, CMS = "11".
+In questa modalità, il bit di direzione (DIR dal registro TIMx_CR1) non può essere settato, ma viene aggiornato 
+dall'hardware e fornisce la direzione corrente del contatore.
+L'update event può essere generato ad ogni overflow e ad ogni underflow del contatore,
+oppure impostando il bit UG nel registro TIMx_EGR. In questo caso, il contatore riparte dal conteggio
+0, così come il contatore del prescaler.
+L'evento di aggiornamento UEV può essere disabilitato dal software impostando il bit UDIS in TIMx_CR1. Questo per evitare 
+di aggiornare i registri ombra mentre si scrivono nuovi valori nei preload register. Quindi non si verifica alcun evento di 
+aggiornamento fino a quando il bit UDIS non è stato settato 0.
+Tuttavia, il contatore continua a contare, in base al ricaricamento automatico corrente valore.
+Inoltre, se è settato il bit URS (selezione richiesta aggiornamento) nel registro TIMx_CR1, impostando il bit UG genera un evento di aggiornamento UEV ma senza impostare il flag UIF (quindi nessun interrupt o
+Richiesta DMA inviata). Questo per evitare che avvengando delle interrupts 
+durante sia l'update che l'acquisizione quando viene cancellato il contatore sull'evento di acquisizione.
+Quando si verifica un update event, tutti i registri vengono aggiornati e viene settato il flag di aggiornamento ( ovvero
+bit UIF in TIMx_SR register) a seconda del bit URS:
+• Il buffer del prescaler viene ricaricato con il valore di preload (TIMx_PSC); 
+• Il registro ombra di auto-reload viene aggiornato con il valore di preload (TIMx_ARR).
+Si noti che se l'origine dell'aggiornamento è un overflow del contatore, il caricamento automatico
+viene aggiornato prima che il contatore venga ricaricato, in modo che il periodo successivo sia quello previsto
+(il contatore viene caricato con il nuovo valore).
