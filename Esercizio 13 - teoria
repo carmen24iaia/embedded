@@ -15,6 +15,7 @@ settato il flag  di over-capture CCxOF (registro TIMx_SR).
 Per un basic timer in un sistema con clock a 42Mhz, come possono essere scelti i di prescalar e 
 period per ottenere un update event di 300ms?
 
+(Considerazione: 300ms -> 3.33 Hz)
 Il prescalar protrebbe essere di 1399 e il period di 9999.
 
 
