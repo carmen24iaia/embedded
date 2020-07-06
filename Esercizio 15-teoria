@@ -1,0 +1,66 @@
+Nel contesto della configurazione del baud rate per una periferica UART, si suppone che il clock sia 16MHz ed il sistema sia sovracampionato a 16x (OVER8 = 0). 
+Quant'è dunque il valore di USARTDIV se si desidera un baud rate di 9600? 
+Infine, in quali registri si metteranno i valori di mantissa ed esponente per realizzare tale configurazione?
+
+Il valore dell'USARTDIV è 104.167 infatti -> USARTDIV = f_ck/baud*8(2-OVER8) 
+Il registro in cui verranno posti i valori di mantissa ed esponente per realizzare tale configurazione è l'USART_BBR, dove DIV_MANTISSA[11:0] e DIV_FRACTION[3:0]
+(quando è settato l'OVER8 (=1), allora il DIV_FRACTION3 non è preso in considerazione e deve essere eliminato) 
+
+
+
+
+Per una comunicazione I²C, come vengono generalmente usati i segnali SDA e SCL per segnalare una Stop Condition?
+
+La condizione di Stop Condition, solitamente, viene segnalata da una transizione da basso ad alto dell'SDA e SCL alto.
+
+
+
+Descrivere brevemente il funzionamento della modalità slave per una comunicazione I²C.
+
+Il clock di ingresso periferico deve essere programmato nel registro I2C_CR2 per generare i tempi corretti. 
+La frequenza di clock dell'ingresso periferico deve essere almeno:
+• 2 MHz in modalità Sm
+• 4 MHz in modalità Fm
+Non appena viene rilevata una condizione iniziale, l'indirizzo viene ricevuto dalla linea SDA e inviato al registro a scorrimento. 
+Quindi viene confrontato con l'indirizzo dell'interfaccia (OAR1) e con OAR2 (se ENDUAL = 1) o l'indirizzo di chiamata generale (se ENGC = 1).
+
+In quale registro per la configurazione della comunicazione I²C si trova l'eventuale indirizzo secondario usato in modalità dual addressing?
+
+Nell'OAR2, ADD2[7:1]
+
+
+
+Per una comunicazione SPI cosa specifica il valore Clock Polarity? Che valore assume nella modalità 0?
+
+Indica lo stato logico iniziale del clock.
+Quand CPOL = 0 il valore di base dell'orologio è zero, ovvero lo stato attivo è 1 e lo stato inattivo è 0. Allora: 
+Per CPHA = 0, i dati vengono acquisiti sul fronte di salita SCK e i dati vengono emessi su un fronte di discesa.
+Per CPHA = 1, i dati vengono acquisiti sul fronte di discesa SCK e i dati vengono emessi su un fronte di salita.
+
+
+
+Per una comunicazione SPI, come si può configurare il data frame format? In quale registro si trova tale parametro di configurazione?
+
+Il data frame format può essere configurato in trasmissione e in ricezione, il registro in cui si trova tale parametro è l'SPI_CRI
+
+
+
+Fornire un breve confronto tra comunicazione SPI e I²C
+
+Il protocollo SPI è un protocollo di comunicazione con una configurazione full-duplex. Utilizza quattro segnali: Chip Select (CS), 
+Clock (SCK), Master Out / Slave In (MOSI) e Master In / Slave Out (MISO) per le comunicazioni tra un master e uno slave. 
+Una connessione master-slave singola richiede un segnale CS. Ciò significa che il numero di segnali CS aumenta se più di 
+un singolo slave è connesso allo stesso bus. 
+
+Non vi è un limite ufficiale alla velocità di un bus SPI. 
+Esistono quattro modalità di SPI nelle quali i dati si collegano ai diversi fronti e alle polarità del segnale di clock. 
+Non esiste tuttavia un meccanismo standard che consenta a un master di confermare che i dati siano stati ricevuti e memorizzati con successo dallo slave.
+
+Al contrario, il protocollo I2C bus, richiede solo due linee: Serial Data (SDA) e Serial Clock (SCLK). Funziona ad una velocità molto inferiore, 
+sebbene siano possibili velocità più elevate che potrebbero non essere supportate dalla maggior parte dei microcontrollori. 
+I dispositivi slave collegati al bus I2C sono identificati dall’indirizzo del chip, definito dall’hardware. 
+Con il protocollo I2C, i pin di segnale del microcontrollore sono al minimo.
+
+Uno standard per I2C ben definito riguarda la velocità del protocollo, così come i comandi, l’inizializzazione, il trasferimento dei dati e 
+il riconoscimento tra dispositivi master e slave. Ciò garantisce che tutti i dispositivi che supportano il protocollo I2C osservino un unico standard 
+per facilitare l’implementazione. 
